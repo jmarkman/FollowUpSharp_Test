@@ -5,9 +5,9 @@ Reimplementation of [qfuAuto](https://github.com/jmarkman/qfuAuto) in C#
 
 [qfuAuto](https://github.com/jmarkman/qfuAuto) relies on GUI automation via the [PyAutoGui](https://github.com/asweigart/pyautogui) library by Al Sweigart. Implementation of that script went poorly, however, mainly because of how others at my job wanted it to be used aka having it act as a user-launched script instead of something that sat on a machine in a corner. That means:
 
-*No one has the same monitor size (resolution implied)
-*Computer speed varies from person to person
-*The person is rendered useless as the GUI automation does its thing
+- No one has the same monitor size (resolution implied)
+- Computer speed varies from person to person
+- The person is rendered useless as the GUI automation does its thing
 
 ### The solution:
 
