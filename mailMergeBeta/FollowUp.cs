@@ -31,8 +31,11 @@ namespace mailMergeBeta
             sheet.addNames(dbFirstNames);
             sheet.addEmails(dbEmails);
             sheet.saveWS();
-            sheet.removeDuplicates(); 
+            sheet.removeDuplicates();
             // TODO: see how this plays out - if it sucks, implement a search of some kind instead of accessing the Excel COM
+
+            MailMerge.beginMerge();
+            // Don't do this
 
             //Console.ReadKey();
         }

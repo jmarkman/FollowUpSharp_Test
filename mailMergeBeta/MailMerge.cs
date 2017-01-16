@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +12,15 @@ namespace mailMergeBeta
     {
         public static void beginMerge()
         {
-            var app = new Word.Application();
-            var doc = new Word.Document();
-            var mailMerge = doc.MailMerge;
-
+            Word.Application app = new Word.Application();
+            app.Visible = true;
+            Word.Document doc = app.Documents.Open($@"C:\Users\{Environment.UserName}\Documents\testMerge.docm");
+            
             // "Connect" to the excel spreadsheet we just made
-            mailMerge.OpenDataSource(@"D:\Work\Follow Ups.xlsx", ReadOnly: false,  LinkToSource: true, Connection: @"Provider=Microsoft.ACE.OLEDB.12.0;User ID=Admin;Data Source=D:\Work\Follow Ups.xlsx;Mode=Read;Extended Properties=""HDR=YES;IMEX=1;"";Jet OLEDB:System database="""";Jet OLEDB:Registry Path="""";Je", SQLStatement: "SELECT * FROM 'Quote Follow Up Records$'");
+            doc.MailMerge.OpenDataSource(Name: $@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx", ReadOnly: true, Connection: "Quote Follow Up Records");
+            
 
+                        
         }
     }
 }

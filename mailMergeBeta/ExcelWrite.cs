@@ -107,7 +107,8 @@ namespace mailMergeBeta
              * All 4 of these should be pretty self explanatory
              */
             Excel.Application excel = new Excel.Application();
-            Excel.Workbook excelWB = excel.Workbooks.Open(@"D:\Work\Follow Ups.xlsx");
+            //Excel.Workbook excelWB = excel.Workbooks.Open(@"D:\Work\Follow Ups.xlsx");
+            Excel.Workbook excelWB = excel.Workbooks.Open($@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx");
             Excel.Worksheet excelWS = excelWB.Sheets[1];
             Excel.Range sheetRange = excelWS.UsedRange;
 
@@ -136,11 +137,16 @@ namespace mailMergeBeta
         public void saveWS()
         {
             Byte[] bin = qfuExcel.GetAsByteArray();
-            File.WriteAllBytes(@"D:\Work\Follow Ups.xlsx", bin);
-            // Note - directory MUST exist beforehand for this to work flawlessly
-            // TODO: Have filepath use relative windows directory
-            // TODO: If folder "Quote Follow Ups Archive" doesn't exist at relpath, create it
-            // This MUST be fixed and otherwise ready before going live - no exceptions!
+            try
+            {
+               File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx", bin);
+            }
+            catch (DirectoryNotFoundException dnf)
+            {
+                Console.WriteLine("Directory not found! Creating...");
+                Directory.CreateDirectory($@"C:\Users\{Environment.UserName}\Documents\testArchive");
+                File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx", bin);
+            }
         }
     }
 }

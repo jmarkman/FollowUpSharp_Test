@@ -24,11 +24,19 @@ namespace mailMergeBeta
         public Query()
         {
             dbConn = new SqlConnection(
-                "server = WINDOWS-KUGQ4HC\\TESTDATABASE;" +
+                "server = reports.li.wkfc.com;" +
+                "Trusted_Connection = yes;" +
+                "database = WKFC_ADHOC;" +
+                "connection timeout = 30"
+                );
+
+            /*
+             *  My laptop local SQL server
+             *  "server = WINDOWS-KUGQ4HC\\TESTDATABASE;" +
                 "Trusted_Connection = yes;" +
                 "database = datapile;" +
                 "connection timeout = 30"
-                );
+             */
         }
 
         /// <summary>
@@ -79,13 +87,15 @@ namespace mailMergeBeta
         {
             dbConn.Open();
             List<string> emailStorage = new List<string>();
-            string emailQuery = "select email from followup";
+            //string emailQuery = "select email from followup";
+            string emailQuery = "select fetchEmails from followup";
             SqlCommand getEmail = new SqlCommand(emailQuery, dbConn);
 
             SqlDataReader returnEmail = getEmail.ExecuteReader();
             while (returnEmail.Read())
             {
-                emailStorage.Add(returnEmail["email"].ToString());
+                //emailStorage.Add(returnEmail["email"].ToString());
+                emailStorage.Add(returnEmail["fetchEmails"].ToString());
             }
             dbConn.Close();
             return emailStorage;
