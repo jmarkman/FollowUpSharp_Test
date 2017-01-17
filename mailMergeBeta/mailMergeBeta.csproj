@@ -48,7 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExcelWrite.cs" />
-    <Compile Include="MailMerge.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="FollowUp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
