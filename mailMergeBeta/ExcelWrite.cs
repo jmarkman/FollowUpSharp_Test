@@ -25,7 +25,7 @@ namespace mailMergeBeta
             qfuExcel.Workbook.Worksheets.Add("Quote Follow Ups");
             // Targeting of worksheets works on an index basis, with the sheet index starting at position 1
             ws = qfuExcel.Workbook.Worksheets[1];
-            ws.Name = "Quote Follow Up Records";
+            ws.Name = "Records";
 
             // Value assignment to cells is direct
             ws.Cells["A1"].Value = "Control_Number";
@@ -33,9 +33,9 @@ namespace mailMergeBeta
             ws.Cells["C1"].Value = "Broker_Email";
 
             // Changing font style is a boolean value, while color changing is more direct
-            ws.Cells["A1"].Style.Font.Bold = true;
-            ws.Cells["B1"].Style.Font.Bold = true;
-            ws.Cells["C1"].Style.Font.Bold = true;
+            //ws.Cells["A1"].Style.Font.Bold = true;
+            //ws.Cells["B1"].Style.Font.Bold = true;
+            //ws.Cells["C1"].Style.Font.Bold = true;
 
 
         }
@@ -98,17 +98,21 @@ namespace mailMergeBeta
              * 
              * I don't know why EPPlus doesn't have a built in version of this,
              * although I can also accomplish this with a linear search since
-             * O(n^2) speed is just fine here since it'll still be faster than 
-             * writing emails/generating emails by storing them in a signature
-             * and editing them individually ALL DAY LONG.
+             * Big O notation speed doesn't matter too much for this application
+             * right now, since it'll still be faster than writing emails/generating 
+             * emails by storing them in a signature and editing them individually ALL DAY LONG.
+             * 
+             * Getting the items from the actual WKFC database will be sort of its own mess
+             * in terms of speed since its a perfect storm of Dan's SQL ability being low and
+             * the way to access ANYTHING in the database is a long-ass list of inner joins.
              * 
              * Below, 4 objects are instantiated:
              * excel, excelWB, excelWS, sheetRange
-             * All 4 of these should be pretty self explanatory
+             * All 4 of these should be pretty self explanatory in what their instances represent
              */
             Excel.Application excel = new Excel.Application();
             //Excel.Workbook excelWB = excel.Workbooks.Open(@"D:\Work\Follow Ups.xlsx");
-            Excel.Workbook excelWB = excel.Workbooks.Open($@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx");
+            Excel.Workbook excelWB = excel.Workbooks.Open($@"C:\Users\{Environment.UserName}\Documents\followups.xlsx");
             Excel.Worksheet excelWS = excelWB.Sheets[1];
             Excel.Range sheetRange = excelWS.UsedRange;
 
@@ -136,16 +140,26 @@ namespace mailMergeBeta
         /// </summary>
         public void saveWS()
         {
+            DateTime theDate = DateTime.Now;
+            string today = theDate.ToString("MM-dd-yyyy");
+            string archivePath = $@"C:\Users\{Environment.UserName}\Documents\archive\";
+            string excelWorkbookName = $"Follow Ups for {today}.xlsx";
+            /*
+             * Capture the Excel file currently being worked with in memory and store it in a byte array
+             * so it can be saved to the user's computer
+             */
             Byte[] bin = qfuExcel.GetAsByteArray();
             try
             {
-               File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx", bin);
+               File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\followups.xlsx", bin);
+               File.WriteAllBytes(Path.Combine(archivePath, excelWorkbookName), bin);
             }
-            catch (DirectoryNotFoundException dnf)
+            catch (DirectoryNotFoundException)
             {
                 Console.WriteLine("Directory not found! Creating...");
-                Directory.CreateDirectory($@"C:\Users\{Environment.UserName}\Documents\testArchive");
-                File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx", bin);
+                File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\followups.xlsx", bin);
+                Directory.CreateDirectory($@"C:\Users\{Environment.UserName}\Documents\archive");
+                File.WriteAllBytes(Path.Combine(archivePath, excelWorkbookName), bin);
             }
         }
     }

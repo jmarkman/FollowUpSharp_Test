@@ -37,6 +37,15 @@ namespace mailMergeBeta
                 "database = datapile;" +
                 "connection timeout = 30"
              */
+
+            /*
+             * Work SQL Server
+             * 
+                "server = reports.li.wkfc.com;" +
+                "Trusted_Connection = yes;" +
+                "database = WKFC_ADHOC;" +
+                "connection timeout = 30"
+             */
         }
 
         /// <summary>

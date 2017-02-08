@@ -34,7 +34,7 @@ namespace mailMergeBeta
             Console.WriteLine($"Getting emails... Current time: {watch.ElapsedMilliseconds}");
             dbEmails = imsQFU.fetchEmails();
 
-            
+
             ExcelWrite sheet = new ExcelWrite();
             Console.WriteLine($"Instantiating Excel class... Current time: {watch.ElapsedMilliseconds}");
             sheet.addCtrlNums(dbCtrlNums);
@@ -46,22 +46,36 @@ namespace mailMergeBeta
             // TODO: see how this plays out - if it sucks, implement a search of some kind instead of accessing the Excel COM
 
             beginMerge();
-
-            Console.ReadKey();
+            Console.WriteLine($"Finishing Mail Merge... Current time: {watch.ElapsedMilliseconds}");
         }
 
         public static void beginMerge()
         {
+            string filePath = $@"C:\Users\{Environment.UserName}\Documents\followups.xlsx";
+
             // Instantiation of the Interop Objects for the Application and the Document
             Word.Application app = new Word.Application();
-            Word.Document doc = app.Documents.Add($@"C:\Users\{Environment.UserName}\Documents\testMerge.docm");
+            Word.Document doc = app.Documents.Add($@"C:\Users\{Environment.UserName}\Documents\testMerge.docx", Visible: false);
+            //Word.Document doc = app.Documents.Add($@"D:\Work\testMergeDoc.docx");
+            var wordMailMerge = doc.MailMerge; // Easy access to the mail merge object
 
+            app.Visible = false;
+            doc.Select();
             // "Connect" to the excel spreadsheet we just made
-            doc.MailMerge.OpenDataSource(Name: $@"C:\Users\{Environment.UserName}\Documents\testArchive\Follow Ups.xlsx", ReadOnly: true, Connection: "Quote Follow Up Records");
+            wordMailMerge.OpenDataSource(filePath, SQLStatement: "SELECT * FROM [Records$]");
+ 
+            wordMailMerge.Destination = Word.WdMailMergeDestination.wdSendToEmail;
+            wordMailMerge.SuppressBlankLines = true;
+            wordMailMerge.DataSource.FirstRecord = (int)Word.WdMailMergeDefaultRecord.wdDefaultFirstRecord;
+            wordMailMerge.DataSource.LastRecord = (int)Word.WdMailMergeDefaultRecord.wdDefaultLastRecord;
+            wordMailMerge.MailAddressFieldName = "Broker_Email";
+            wordMailMerge.Execute(false);
+            doc.Close(SaveChanges: Word.WdSaveOptions.wdDoNotSaveChanges);
+            app.Quit();
 
-            doc.MailMerge.Destination = Word.WdMailMergeDestination.wdSendToEmail;
-            Console.WriteLine(doc.MailMerge.MailAddressFieldName);
-            //doc.MailMerge.Execute();
+            wordMailMerge = null;
+            doc = null;
+            app = null;
         }
     }
 }
