@@ -51,29 +51,28 @@ namespace mailMergeBeta
 
         public static void beginMerge()
         {
-            string filePath = $@"C:\Users\{Environment.UserName}\Documents\followups.xlsx";
+            string filePath = $@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp\followups.xlsx";
 
             // Instantiation of the Interop Objects for the Application and the Document
             Word.Application app = new Word.Application();
             Word.Document doc = app.Documents.Add($@"C:\Users\{Environment.UserName}\Documents\testMerge.docx", Visible: false);
-            //Word.Document doc = app.Documents.Add($@"D:\Work\testMergeDoc.docx");
-            var wordMailMerge = doc.MailMerge; // Easy access to the mail merge object
+            var mrg = doc.MailMerge; // Easy access to the mail merge object
 
             app.Visible = false;
             doc.Select();
             // "Connect" to the excel spreadsheet we just made
-            wordMailMerge.OpenDataSource(filePath, SQLStatement: "SELECT * FROM [Records$]");
+            mrg.OpenDataSource(filePath, SQLStatement: "SELECT * FROM [Records$]");
  
-            wordMailMerge.Destination = Word.WdMailMergeDestination.wdSendToEmail;
-            wordMailMerge.SuppressBlankLines = true;
-            wordMailMerge.DataSource.FirstRecord = (int)Word.WdMailMergeDefaultRecord.wdDefaultFirstRecord;
-            wordMailMerge.DataSource.LastRecord = (int)Word.WdMailMergeDefaultRecord.wdDefaultLastRecord;
-            wordMailMerge.MailAddressFieldName = "Broker_Email";
-            wordMailMerge.Execute(false);
+            mrg.Destination = Word.WdMailMergeDestination.wdSendToEmail;
+            mrg.SuppressBlankLines = true;
+            mrg.DataSource.FirstRecord = (int)Word.WdMailMergeDefaultRecord.wdDefaultFirstRecord;
+            mrg.DataSource.LastRecord = (int)Word.WdMailMergeDefaultRecord.wdDefaultLastRecord;
+            mrg.MailAddressFieldName = "Broker_Email";
+            mrg.Execute();
             doc.Close(SaveChanges: Word.WdSaveOptions.wdDoNotSaveChanges);
             app.Quit();
 
-            wordMailMerge = null;
+            mrg = null;
             doc = null;
             app = null;
         }

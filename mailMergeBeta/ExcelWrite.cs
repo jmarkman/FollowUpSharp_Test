@@ -33,11 +33,9 @@ namespace mailMergeBeta
             ws.Cells["C1"].Value = "Broker_Email";
 
             // Changing font style is a boolean value, while color changing is more direct
-            //ws.Cells["A1"].Style.Font.Bold = true;
-            //ws.Cells["B1"].Style.Font.Bold = true;
-            //ws.Cells["C1"].Style.Font.Bold = true;
-
-
+            ws.Cells["A1"].Style.Font.Bold = true;
+            ws.Cells["B1"].Style.Font.Bold = true;
+            ws.Cells["C1"].Style.Font.Bold = true;
         }
 
         /// <summary>
@@ -49,16 +47,15 @@ namespace mailMergeBeta
         public void addCtrlNums(List<string> _ctrlNums)
         {
             /*
-             * for each row "r" where r is less than some value
+             * for each row "row" where row is less than the length of the list
              *     for each item in the list "_ctrlNums" for the length of the list
              *        ws.Cells[row, 1].Value = _ctrlNums[i]
              */
-            for (int r = 2, i = 0; i < _ctrlNums.Count; r++, i++)
+            for (int row = 2, i = 0; i < _ctrlNums.Count; row++, i++)
             {
-                ws.Cells[r, 1].Value = _ctrlNums[i];
+                ws.Cells[row, 1].Value = _ctrlNums[i];
             }
             // Excel generally works on an index 1 basis, so column A would be 1
-
         }
 
         /// <summary>
@@ -69,9 +66,9 @@ namespace mailMergeBeta
         /// be a list of broker names represented as strings.</param>
         public void addNames(List<string> _names)
         {
-            for (int r = 2, i = 0; i < _names.Count; r++, i++)
+            for (int row = 2, i = 0; i < _names.Count; row++, i++)
             {
-                ws.Cells[r, 2].Value = _names[i];
+                ws.Cells[row, 2].Value = _names[i];
             }
         }
 
@@ -83,9 +80,41 @@ namespace mailMergeBeta
         /// be a list of emails represented as strings.</param>
         public void addEmails(List<string> _emails)
         {
-            for (int r = 2, i = 0; i < _emails.Count; r++, i++)
+            for (int row = 2, i = 0; i < _emails.Count; r++, i++)
             {
-                ws.Cells[r, 3].Value = _emails[i];
+                ws.Cells[row, 3].Value = _emails[i];
+            }
+        }
+
+        // TODO: Add methods for adding property location names to sheet
+        // TODO: Add methods for adding effective dates to sheet
+
+        /// <summary>
+        /// Saves the worksheet to a specified direcetory since EPPlus works with Excel in memory.
+        /// </summary>
+        public void saveWS()
+        {
+            DateTime theDate = DateTime.Now; // Instantiate a datetime object to get today's date
+            string today = theDate.ToString("MM-dd-yyyy"); // Get today's date as a string in the format month-day-year
+            string archivePath = $@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp\Quote Follow Ups Archive\";
+            string excelWorkbookName = $"Follow Ups for {today}.xlsx";
+            /*
+             * Capture the Excel file currently being worked with in memory and store it in a byte array
+             * so it can be saved to the user's computer
+             */
+            Byte[] bin = qfuExcel.GetAsByteArray();
+            try
+            {
+                File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp\followups.xlsx", bin);
+                File.WriteAllBytes(Path.Combine(archivePath, excelWorkbookName), bin);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Console.WriteLine("Directory not found! Creating...");
+                Directory.CreateDirectory($@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp");
+                Directory.CreateDirectory($@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp\Quote Follow Ups Archive\");
+                File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp\followups.xlsx", bin);
+                File.WriteAllBytes(Path.Combine(archivePath, excelWorkbookName), bin);
             }
         }
 
@@ -111,8 +140,7 @@ namespace mailMergeBeta
              * All 4 of these should be pretty self explanatory in what their instances represent
              */
             Excel.Application excel = new Excel.Application();
-            //Excel.Workbook excelWB = excel.Workbooks.Open(@"D:\Work\Follow Ups.xlsx");
-            Excel.Workbook excelWB = excel.Workbooks.Open($@"C:\Users\{Environment.UserName}\Documents\followups.xlsx");
+            Excel.Workbook excelWB = excel.Workbooks.Open($@"C:\Users\{Environment.UserName}\Documents\FollowUpSharp\followups.xlsx");
             Excel.Worksheet excelWS = excelWB.Sheets[1];
             Excel.Range sheetRange = excelWS.UsedRange;
 
@@ -130,37 +158,6 @@ namespace mailMergeBeta
             excelWB.Close(true);
             Marshal.ReleaseComObject(excelWB);
             Marshal.ReleaseComObject(excel);
-        }
-            
-        // TODO: Add methods for adding property location names to sheet
-        // TODO: Add methods for adding effective dates to sheet
-
-        /// <summary>
-        /// Saves the worksheet to a specified direcetory since EPPlus works with Excel in memory.
-        /// </summary>
-        public void saveWS()
-        {
-            DateTime theDate = DateTime.Now;
-            string today = theDate.ToString("MM-dd-yyyy");
-            string archivePath = $@"C:\Users\{Environment.UserName}\Documents\archive\";
-            string excelWorkbookName = $"Follow Ups for {today}.xlsx";
-            /*
-             * Capture the Excel file currently being worked with in memory and store it in a byte array
-             * so it can be saved to the user's computer
-             */
-            Byte[] bin = qfuExcel.GetAsByteArray();
-            try
-            {
-               File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\followups.xlsx", bin);
-               File.WriteAllBytes(Path.Combine(archivePath, excelWorkbookName), bin);
-            }
-            catch (DirectoryNotFoundException)
-            {
-                Console.WriteLine("Directory not found! Creating...");
-                File.WriteAllBytes($@"C:\Users\{Environment.UserName}\Documents\followups.xlsx", bin);
-                Directory.CreateDirectory($@"C:\Users\{Environment.UserName}\Documents\archive");
-                File.WriteAllBytes(Path.Combine(archivePath, excelWorkbookName), bin);
-            }
-        }
+        }      
     }
 }

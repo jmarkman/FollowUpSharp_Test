@@ -24,9 +24,9 @@ namespace mailMergeBeta
         public Query()
         {
             dbConn = new SqlConnection(
-                "server = reports.li.wkfc.com;" +
+                "server = WINDOWS-KUGQ4HC\\TESTDATABASE;" +
                 "Trusted_Connection = yes;" +
-                "database = WKFC_ADHOC;" +
+                "database = datapile;" +
                 "connection timeout = 30"
                 );
 
@@ -54,17 +54,25 @@ namespace mailMergeBeta
         /// <returns>Returns a string list of control numbers.</returns>
         public List<string> fetchCtrlNum()
         {
-            dbConn.Open();
             List<string> ctrlStorage = new List<string>();
-            string numQuery = "select ctrlNum from followup";
-            SqlCommand getCtrlNum = new SqlCommand(numQuery, dbConn);
-
-            SqlDataReader returnCtrlNum = getCtrlNum.ExecuteReader();
-            while (returnCtrlNum.Read())
+            try
             {
-                ctrlStorage.Add(returnCtrlNum["ctrlNum"].ToString());
+                dbConn.Open();
+
+                string numQuery = "select ctrlNum from followup";
+                SqlCommand getCtrlNum = new SqlCommand(numQuery, dbConn);
+
+                SqlDataReader returnCtrlNum = getCtrlNum.ExecuteReader();
+                while (returnCtrlNum.Read())
+                {
+                    ctrlStorage.Add(returnCtrlNum["ctrlNum"].ToString());
+                }
+                dbConn.Close();
             }
-            dbConn.Close();
+            catch (SqlException)
+            {
+                Console.WriteLine("SQL Error! Most likely nothing in the column!");
+            }
             return ctrlStorage;
         }
 
@@ -74,17 +82,25 @@ namespace mailMergeBeta
         /// <returns>Returns a string list of broker names.</returns>
         public List<string> fetchNames()
         {
-            dbConn.Open();
             List<string> nameStorage = new List<string>();
-            string nameQuery = "select firstName from followup";
-            SqlCommand getName = new SqlCommand(nameQuery, dbConn);
-
-            SqlDataReader returnName = getName.ExecuteReader();
-            while (returnName.Read())
+            try
             {
-                nameStorage.Add(returnName["firstName"].ToString());
+                dbConn.Open();
+
+                string nameQuery = "select firstName from followup";
+                SqlCommand getName = new SqlCommand(nameQuery, dbConn);
+
+                SqlDataReader returnName = getName.ExecuteReader();
+                while (returnName.Read())
+                {
+                    nameStorage.Add(returnName["firstName"].ToString());
+                }
+                dbConn.Close();
             }
-            dbConn.Close();
+            catch (SqlException)
+            {
+                Console.WriteLine("SQL Error! Most likely nothing in the column!");
+            }
             return nameStorage;
         }
 
@@ -94,19 +110,27 @@ namespace mailMergeBeta
         /// <returns>Returns a string list of broker emails.</returns>
         public List<string> fetchEmails()
         {
-            dbConn.Open();
             List<string> emailStorage = new List<string>();
-            //string emailQuery = "select email from followup";
-            string emailQuery = "select fetchEmails from followup";
-            SqlCommand getEmail = new SqlCommand(emailQuery, dbConn);
-
-            SqlDataReader returnEmail = getEmail.ExecuteReader();
-            while (returnEmail.Read())
+            try
             {
-                //emailStorage.Add(returnEmail["email"].ToString());
-                emailStorage.Add(returnEmail["fetchEmails"].ToString());
+                dbConn.Open();
+                //string emailQuery = "select email from followup";
+                string emailQuery = "select fetchEmails from followup";
+                SqlCommand getEmail = new SqlCommand(emailQuery, dbConn);
+
+                SqlDataReader returnEmail = getEmail.ExecuteReader();
+                while (returnEmail.Read())
+                {
+                    //emailStorage.Add(returnEmail["email"].ToString());
+                    emailStorage.Add(returnEmail["fetchEmails"].ToString());
+                }
+                dbConn.Close();
+
             }
-            dbConn.Close();
+            catch (SqlException)
+            {
+                Console.WriteLine("SQL Error! Most likely nothing in the column!");
+            }
             return emailStorage;
         }
 
@@ -114,48 +138,70 @@ namespace mailMergeBeta
         /// Prints the active control numbers to stdout.</summary>
         public void getCtrlNums()
         {
-            dbConn.Open();
-            string numQuery = "select ctrlNum from followup";
-            SqlCommand getCtrlNum = new SqlCommand(numQuery, dbConn);
-
-            SqlDataReader returnCtrlNum = getCtrlNum.ExecuteReader();
-            while (returnCtrlNum.Read())
+            try
             {
-                Console.WriteLine(returnCtrlNum["ctrlNum"].ToString());
+                dbConn.Open();
+                string numQuery = "select ctrlNum from followup";
+                SqlCommand getCtrlNum = new SqlCommand(numQuery, dbConn);
+
+                SqlDataReader returnCtrlNum = getCtrlNum.ExecuteReader();
+                while (returnCtrlNum.Read())
+                {
+                    Console.WriteLine(returnCtrlNum["ctrlNum"].ToString());
+                }
+                dbConn.Close();
             }
-            dbConn.Close();
+            catch (SqlException)
+            {
+                Console.WriteLine("Nothing in the column!");
+            }     
         }
 
         /// <summary>
         /// Prints the active broker names to stdout.</summary>
         public void getNames()
         {
-            dbConn.Open();
-            string nameQuery = "select firstName from followup";
-            SqlCommand getName = new SqlCommand(nameQuery, dbConn);
-
-            SqlDataReader returnName = getName.ExecuteReader();
-            while (returnName.Read())
+            try
             {
-                Console.WriteLine(returnName["firstName"].ToString());
+                dbConn.Open();
+                string nameQuery = "select firstName from followup";
+                SqlCommand getName = new SqlCommand(nameQuery, dbConn);
+
+                SqlDataReader returnName = getName.ExecuteReader();
+                while (returnName.Read())
+                {
+                    Console.WriteLine(returnName["firstName"].ToString());
+                }
+                dbConn.Close();
             }
-            dbConn.Close();
+            catch (SqlException)
+            {
+                Console.WriteLine("Nothing in the column!");
+            }
         }
 
         /// <summary>
         /// Prints the active emails to stdout.</summary>
         public void getEmails()
         {
-            dbConn.Open();
-            string emailQuery = "select email from followup";
-            SqlCommand getEmail = new SqlCommand(emailQuery, dbConn);
-
-            SqlDataReader returnEmail = getEmail.ExecuteReader();
-            while (returnEmail.Read())
+            try
             {
-                Console.WriteLine(returnEmail["email"].ToString());
+                dbConn.Open();
+                string emailQuery = "select email from followup";
+                SqlCommand getEmail = new SqlCommand(emailQuery, dbConn);
+
+                SqlDataReader returnEmail = getEmail.ExecuteReader();
+                while (returnEmail.Read())
+                {
+                    Console.WriteLine(returnEmail["email"].ToString());
+                }
+                dbConn.Close();
             }
-            dbConn.Close();
+            catch (SqlException)
+            {
+                Console.WriteLine("Nothing in the column!");
+            }
+            
         }
 
         // TODO: Get insured names from SQL query
